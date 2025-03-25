@@ -15,7 +15,7 @@ namespace CodePulse.API.Controllers
     {
         private readonly ICategoryRepository categoryRepository;
 
-        public CategoriesController(ICategoryRepository categoryRepository) 
+        public CategoriesController(ICategoryRepository categoryRepository)
         {
             this.categoryRepository = categoryRepository;
         }
@@ -42,7 +42,7 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
-        //Get: /api/categories 
+        //Get: https://localhost:7124/api/categories 
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
@@ -50,11 +50,11 @@ namespace CodePulse.API.Controllers
 
             // Map Domain Model to DTO
             var response = new List<CategoryDto>();
-            foreach(var category in categories)
+            foreach (var category in categories)
             {
                 response.Add(new CategoryDto
                 {
-                    Id = category.Id, 
+                    Id = category.Id,
                     Name = category.Name,
                     UrlHandle = category.UrlHandle
                 });
@@ -62,6 +62,30 @@ namespace CodePulse.API.Controllers
 
             return Ok(response);
         }
+
+        //Get: https://localhost:7124/api/categories/{id}
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
+        {
+            var exisitingCategory = await categoryRepository.GetById(id);
+            
+            if(exisitingCategory is null)
+            {
+                return NotFound();
+            }
+
+            var response = new CategoryDto
+            {
+                Id = exisitingCategory.Id,
+                Name = exisitingCategory.Name,
+                UrlHandle = exisitingCategory.UrlHandle
+            };
+            return Ok(response);
+
+
+        }
+
     }
 }
  
