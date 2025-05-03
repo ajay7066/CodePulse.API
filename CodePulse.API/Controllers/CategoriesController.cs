@@ -1,6 +1,7 @@
 ﻿using CodePulse.API.Data;
 using CodePulse.API.Models.Domain;
 using CodePulse.API.Models.DTO;
+using CodePulse.API.Repository.Implementation;
 using CodePulse.API.Repository.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -69,8 +70,8 @@ namespace CodePulse.API.Controllers
         public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
         {
             var exisitingCategory = await categoryRepository.GetById(id);
-            
-            if(exisitingCategory is null)
+
+            if (exisitingCategory is null)
             {
                 return NotFound();
             }
@@ -86,6 +87,55 @@ namespace CodePulse.API.Controllers
 
         }
 
+        //PUT : https://localhost:7124/api/categories/{id}
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> EditCategory([FromRoute] Guid id,UpdateCategoryRequestDto request)
+        {
+            //convert DTO to domain model
+            var category = new Category
+            {
+                Id = id,
+                Name = request.Name,
+                UrlHandle = request.UrlHandle
+            };
+            category = await categoryRepository.UpdateAsync(category);
+            if(category == null)
+            {
+                return NotFound();
+            }
+
+            //Convert Domain model to DTO
+            var response = new CategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                UrlHandle = category.UrlHandle
+            };
+            return Ok(response);
+        }
+
+        //DELETE : https://localhost:7224/api/categories/{id}
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
+        {
+            var category = await categoryRepository.DeleteCategory(id);
+            if(category is null)
+            {
+                return NotFound();
+            }
+
+            //convert Domain model to DTO
+            var response = new CategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                UrlHandle = category.UrlHandle
+            };
+            return Ok(response);
+
+        }
     }
 }
  
