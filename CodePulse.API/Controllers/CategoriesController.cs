@@ -21,7 +21,7 @@ namespace CodePulse.API.Controllers
             this.categoryRepository = categoryRepository;
         }
 
-
+        //Post : https://localhost:7124/api/categories
         [HttpPost]
         public async Task<IActionResult> CreateCategories(CreateCategoryRequestDto request)
         {
